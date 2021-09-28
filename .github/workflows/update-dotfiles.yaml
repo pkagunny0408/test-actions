@@ -1,0 +1,24 @@
+name: Update SSDF dotfiles
+on:
+  push:
+    paths: [dotfiles/**]
+jobs:
+  update-dotfiles:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        repo:
+          - nncore
+          - perception
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+          path: ssdf-environment
+      - uses: actions/checkout@v2
+        with:
+          repository: itskyf/test-${{ matrix.repo }}
+      - shell: bash
+        run: |
+          pwd && ls
+      # - uses: peter-evans/create-pull-request@v3
