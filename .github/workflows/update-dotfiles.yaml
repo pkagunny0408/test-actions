@@ -9,16 +9,18 @@ jobs:
       matrix:
         repo:
           - nncore
-          - perception
     steps:
+      - uses: actions/checkout@v2
+        with:
+          repository: itskyf/test-${{ matrix.repo }}
+          path: test-${{ matrix.repo }}
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0
           path: ssdf-environment
-      - uses: actions/checkout@v2
+      - run: cp -r ssdf-environment/dotfiles/. test-${{ matrix.repo }}
+      - run: echo ${{ github.actor }} && echo ${{ github.event.pusher.email }}
+      - uses: peter-evans/create-pull-request@v3
         with:
-          repository: itskyf/test-${{ matrix.repo }}
-      - shell: bash
-        run: |
-          pwd && ls
-      # - uses: peter-evans/create-pull-request@v3
+          committer: ${{ github.actor }} <${{ github.event.pusher.email }}>
+          path: test-${{ matrix.repo }}
