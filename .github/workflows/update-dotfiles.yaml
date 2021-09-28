@@ -1,7 +1,10 @@
 name: Update SSDF dotfiles
 on:
   push:
-    paths: [dotfiles/**]
+    branches:
+      - main
+    paths: 
+      - dotfiles/**
 jobs:
   update-dotfiles:
     runs-on: ubuntu-latest
@@ -19,8 +22,13 @@ jobs:
           fetch-depth: 0
           path: ssdf-environment
       - run: cp -r ssdf-environment/dotfiles/. test-${{ matrix.repo }}
-      - run: echo ${{ github.actor }} && echo ${{ github.event.pusher.email }}
       - uses: peter-evans/create-pull-request@v3
         with:
-          committer: ${{ github.actor }} <${{ github.event.pusher.email }}>
           path: test-${{ matrix.repo }}
+          token: ${{ secrets.PAT }}
+          title: Update dotfiles
+          commit-message: ${{ github.event.commits[0].message }}
+          delete-branch: true
+          team-reviewers: |
+            owners
+            maintainers
